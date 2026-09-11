@@ -1,0 +1,19 @@
+# 1. Fetch all credentials targeting XblGrts using cmdkey
+$Targets = cmdkey.exe /list | Select-String -Pattern "Target:.*XblGrts"
+
+if ($Targets) {
+    Write-Host "Found $($Targets.Count) XblGrts credential(s). Deleting..." -ForegroundColor Cyan
+    
+    foreach ($Line in $Targets) {
+        # Extract the exact target name from the string
+        $TargetName = ($Line -split "Target: ")[1].Trim()
+        
+        # Delete the specific credential
+        Write-Host "Removing: $TargetName" -ForegroundColor Yellow
+        cmdkey.exe /delete:$TargetName | Out-Null
+    }
+    
+    Write-Host "All XblGrts credentials successfully cleared!" -ForegroundColor Green
+} else {
+    Write-Host "No XblGrts credentials found in Credential Manager." -ForegroundColor Green
+}
